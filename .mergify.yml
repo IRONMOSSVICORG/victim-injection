@@ -1,0 +1,15 @@
+# Mergify performs the merges here. GitHub's ruleset requires one approving review,
+# and Mergify is a ruleset bypass actor, which is what docs.mergify.com/merge-queue/
+# github-rulesets recommends. That page states:
+#   "This injection happens automatically for both the merge action and the merge queue."
+#   "if you require at least one approved review, Mergify injects the condition
+#    #approved-reviews-by >= 1"
+# so no review condition is written here - GitHub's is expected to be injected.
+pull_request_rules:
+  - name: merge green pull requests
+    conditions:
+      - check-success = ci
+      - -draft
+      - -conflict
+    actions:
+      merge:
