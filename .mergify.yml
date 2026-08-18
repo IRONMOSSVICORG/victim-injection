@@ -1,15 +1,24 @@
-# Mergify performs the merges here. GitHub's ruleset requires one approving review,
-# and Mergify is a ruleset bypass actor, which is what docs.mergify.com/merge-queue/
-# github-rulesets recommends. That page states:
-#   "This injection happens automatically for both the merge action and the merge queue."
-#   "if you require at least one approved review, Mergify injects the condition
-#    #approved-reviews-by >= 1"
-# so no review condition is written here - GitHub's is expected to be injected.
+# Mergify merge queue. GitHub's ruleset requires one approving review and Mergify is a
+# ruleset bypass actor (bypass_mode exempt), which is what
+# docs.mergify.com/merge-queue/github-rulesets recommends:
+#   "Choose exempt unless you have a reason not to."
+# Injection is left at its default, which that page documents as:
+#   branch_protection_injection_mode: queue (default) - rules are injected as required
+#   conditions for both queuing and merging pull requests.
+# So no review condition is written here.
+queue_rules:
+  - name: default
+    merge_conditions:
+      - check-success = ci
+    merge_method: squash
+    batch_size: 1
+
 pull_request_rules:
-  - name: merge green pull requests
+  - name: queue green pull requests
     conditions:
       - check-success = ci
       - -draft
       - -conflict
     actions:
-      merge:
+      queue:
+        name: default
