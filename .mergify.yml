@@ -1,26 +1,16 @@
-# Mergify merge queue, vendor-recommended ruleset setup: Mergify is a ruleset bypass
-# actor with bypass_mode exempt (docs.mergify.com/merge-queue/github-rulesets:
-# "Choose exempt unless you have a reason not to").
-# branch_protection_injection_mode is left at its default, documented as:
-#   "queue (default) - rules are injected as required conditions for both queuing and
-#    merging pull requests."
-# The repository therefore states its review requirement once, in GitHub, and relies on
-# Mergify to inject it.
-queue_rules:
-  - name: default
-    queue_conditions:
+# Auto-merge, vendor-recommended ruleset setup: Mergify is a ruleset bypass actor with
+# bypass_mode exempt (docs.mergify.com/merge-queue/github-rulesets:
+#   "Choose exempt unless you have a reason not to.")
+# The review requirement is stated ONCE, in the GitHub ruleset. Nothing here restates it,
+# because docs.mergify.com/workflow/actions/merge says:
+#   "Mergify automatically reads your GitHub branch protections and rulesets and injects
+#    them as merge conditions."
+#   "Mergify always respects the branch protection settings"
+merge_protections_settings:
+  auto_merge_conditions: true
+merge_protections:
+  - name: green-ci
+    description: applies to every pull request
+    if: true
+    success_conditions:
       - check-success = ci
-    merge_conditions:
-      - check-success = ci
-    merge_method: squash
-    batch_size: 1
-
-pull_request_rules:
-  - name: queue green pull requests
-    conditions:
-      - check-success = ci
-      - -draft
-      - -conflict
-    actions:
-      queue:
-        name: default
